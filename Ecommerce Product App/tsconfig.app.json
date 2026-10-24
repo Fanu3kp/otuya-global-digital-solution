@@ -1,0 +1,29 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "target": "es2015",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "declaration": false,
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@angular/*": [
+        "./node_modules/@angular/*"
+      ]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}

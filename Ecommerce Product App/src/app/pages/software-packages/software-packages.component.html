@@ -1,0 +1,143 @@
+<div class="min-h-screen bg-gray-50">
+  <header class="bg-pink-gradient sticky top-0 z-10 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border-2 border-pink-lighter">
+            <svg class="w-6 h-6 text-pink-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h1 class="text-2xl font-bold text-white text-gradient">Otuya Global Digital Solution</h1>
+        </div>
+        <div class="flex items-center gap-3">
+          <button *ngIf="!isMobileMenuOpen" (click)="toggleMobileMenu()" class="md:hidden text-white p-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <nav class="hidden md:flex gap-6">
+            <a routerLink="/packages" routerLinkActive="text-white" class="font-bold text-white hover:text-pink-lighter transition-colors">Software Packages</a>
+            <a routerLink="/packages/new" routerLinkActive="text-white" class="font-bold text-white hover:text-pink-lighter transition-colors" *ngIf="isAdmin">Add Package</a>
+            <a routerLink="/my-orders" routerLinkActive="text-white" class="font-bold text-white hover:text-pink-lighter transition-colors" *ngIf="auth.isAuthenticated">My Orders</a>
+            <a *ngIf="!auth.isAuthenticated" routerLink="/login" class="font-bold text-white hover:text-pink-lighter transition-colors">Login</a>
+            <button *ngIf="auth.isAuthenticated" (click)="auth.logout()" class="font-bold text-pink-lighter hover:text-white transition-colors px-3 py-1 rounded-full bg-white/20 border border-white/30">Logout</button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div *ngIf="isMobileMenuOpen" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-6 md:hidden" (click)="toggleMobileMenu()">
+    <nav class="text-center space-y-4">
+      <a routerLink="/packages" routerLinkActive="text-pink-lighter" class="text-white text-xl font-bold block py-3 hover:text-pink-lighter transition-colors">Software Packages</a>
+      <a *ngIf="isAdmin" routerLink="/packages/new" class="text-white text-xl font-bold block py-3 hover:text-pink-lighter transition-colors">Add Package</a>
+      <a *ngIf="auth.isAuthenticated" routerLink="/my-orders" class="text-white text-xl font-bold block py-3 hover:text-pink-lighter transition-colors">My Orders</a>
+      <a *ngIf="!auth.isAuthenticated" routerLink="/login" class="text-white text-xl font-bold block py-3 hover:text-pink-lighter transition-colors">Login</a>
+      <button *ngIf="auth.isAuthenticated" (click)="auth.logout(); toggleMobileMenu()" class="text-pink-lighter text-xl font-bold block py-3 hover:text-white transition-colors">Logout</button>
+    </nav>
+    <button (click)="toggleMobileMenu()" class="absolute top-6 right-6 text-white p-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8 space-y-6">
+      <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div class="flex-1 w-full sm:max-w-md">
+          <div class="relative">
+            <input [(ngModel)]="searchQuery" (input)="handleSearch()" type="text" placeholder="Search software packages..." class="input-field pl-10" />
+            <svg class="w-5 h-5 text-pink-dark absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+        <button (click)="goToAddPackage()" class="btn-primary whitespace-nowrap w-full sm:w-auto shadow-lg" *ngIf="isAdmin">
+          <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Package
+        </button>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4">
+        <select [(ngModel)]="selectedCategory" (change)="handleCategoryChange()" class="input-field bg-pink-lighter border-pink-lighter">
+          <option value="all" class="text-pink-dark">All Categories</option>
+          <option *ngFor="let category of softwarePackageService.categories" [value]="category">{{ formatCategory(category) }}</option>
+        </select>
+
+        <select [(ngModel)]="sortBy" (change)="handleSortChange()" class="input-field bg-pink-lighter border-pink-lighter">
+          <option value="title" class="text-pink-dark">Sort by Title</option>
+          <option value="price" class="text-pink-dark">Sort by Price</option>
+          <option value="rating" class="text-pink-dark">Sort by Rating</option>
+        </select>
+
+        <select [(ngModel)]="sortOrder" (change)="handleSortChange()" class="input-field bg-pink-lighter border-pink-lighter">
+          <option value="asc" class="text-pink-dark">Ascending</option>
+          <option value="desc" class="text-pink-dark">Descending</option>
+        </select>
+      </div>
+
+      <div *ngIf="!softwarePackageService.isLoading && softwarePackageService.packages.length > 0" class="text-sm text-pink-dark font-semibold">
+        Showing {{ rangeStart }} - {{ rangeEnd }} of {{ softwarePackageService.total }} software packages
+      </div>
+    </div>
+
+    <div *ngIf="softwarePackageService.isLoading" class="text-center py-16">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-4 border-pink"></div>
+      <p class="mt-6 text-pink-dark font-semibold text-lg">Loading software packages...</p>
+    </div>
+
+    <div *ngIf="!softwarePackageService.isLoading && softwarePackageService.error" class="text-center py-16">
+      <div class="text-pink-dark mb-4">
+        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <p class="text-pink-dark font-medium">{{ softwarePackageService.error }}</p>
+    </div>
+
+    <div *ngIf="!softwarePackageService.isLoading && !softwarePackageService.error && softwarePackageService.packages.length > 0" class="space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <app-software-package-card *ngFor="let pkg of softwarePackageService.packages" [package]="pkg" (click)="viewPackage(pkg)"></app-software-package-card>
+      </div>
+
+      <div *ngIf="softwarePackageService.totalPages > 1" class="flex justify-center items-center gap-2 mt-10">
+        <button (click)="goToPage(softwarePackageService.currentPage - 1)" [disabled]="softwarePackageService.currentPage === 0" class="btn-secondary shadow-md">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <div class="flex gap-1">
+          <button *ngFor="let page of visiblePages" (click)="goToPage(page)"
+            [ngClass]="{
+              'bg-pink-gradient text-white': page === softwarePackageService.currentPage,
+              'bg-white text-pink-dark border border-pink-lighter hover:bg-pink-lighter': page !== softwarePackageService.currentPage
+            }"
+            class="px-4 py-2 rounded-lg font-bold transition-all border">
+            {{ page }}
+          </button>
+        </div>
+
+        <button (click)="goToPage(softwarePackageService.currentPage + 1)" [disabled]="softwarePackageService.currentPage === softwarePackageService.totalPages - 1" class="btn-secondary shadow-md">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="!softwarePackageService.isLoading && !softwarePackageService.error && softwarePackageService.packages.length === 0" class="text-center py-20">
+      <div class="bg-pink-lighter rounded-2xl p-8 inline-block border-4 border-pink">
+        <svg class="w-20 h-20 mx-auto text-pink-dark mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-pink-dark mt-4">No software packages found</h2>
+      <p class="text-pink-dark/70 text-sm mt-2">Try adjusting your search or filter</p>
+    </div>
+  </main>
+</div>

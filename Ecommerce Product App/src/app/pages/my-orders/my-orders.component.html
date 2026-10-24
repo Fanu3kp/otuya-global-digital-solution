@@ -1,0 +1,71 @@
+<div class="min-h-screen bg-gray-50">
+  <header class="page-header">
+    <div class="header-content">
+      <button (click)="goBack()" class="inline-flex items-center text-sm text-gray-600 hover:text-primary">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Packages
+      </button>
+      <h1 class="page-title">My Orders</h1>
+    </div>
+  </header>
+
+  <div class="page-container">
+    <div *ngIf="loading" class="flex justify-center py-16">
+      <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+    </div>
+
+    <div *ngIf="!loading && error" class="text-center py-16">
+      <div class="text-red-500 mb-3">
+        <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <p class="text-sm text-red-600">{{ error }}</p>
+      <button (click)="loadOrders()" class="mt-4 btn-primary">Retry</button>
+    </div>
+
+    <div *ngIf="!loading && !error && orders.length === 0" class="text-center py-16">
+      <svg class="w-8 h-8 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <p class="text-sm text-gray-600 mb-1">No orders yet</p>
+      <p class="text-xs text-gray-500">Place your first order from the software packages page.</p>
+    </div>
+
+    <div *ngIf="!loading && !error && orders.length > 0" class="card-base">
+      <table class="table-base">
+        <thead>
+          <tr>
+            <th class="table-header-cell">Package</th>
+            <th class="table-header-cell">Quantity</th>
+            <th class="table-header-cell">Item Description</th>
+            <th class="table-header-cell">Total</th>
+            <th class="table-header-cell">Contact Phone</th>
+            <th class="table-header-cell">Status</th>
+            <th class="table-header-cell">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders" class="hover:bg-gray-50 transition-colors">
+            <td class="table-cell">
+              <div class="flex items-center gap-3">
+                <img [src]="order.thumbnail || 'https://via.placeholder.com/40'" [alt]="order.title" class="w-8 h-8 object-cover rounded" />
+                <div class="text-sm text-gray-900 font-medium">{{ order.title }}</div>
+              </div>
+            </td>
+            <td class="table-cell text-sm text-gray-700">{{ order.quantity }}</td>
+            <td class="table-cell text-sm text-gray-600 max-w-xs truncate" title="{{ order.itemDescription || '—' }}">{{ order.itemDescription || '—' }}</td>
+            <td class="table-cell text-sm font-medium text-gray-700">{{ order.totalPrice | currency:'USD' }}</td>
+            <td class="table-cell text-sm text-gray-600">{{ order.contactPhone }}</td>
+            <td class="table-cell">
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-medium" [class.bg-yellow-100]="order.status === 'PENDING'" [class.text-yellow-700]="order.status === 'PENDING'" [class.bg-green-100]="order.status !== 'PENDING'" [class.text-green-700]="order.status !== 'PENDING'">{{ order.status }}</span>
+            </td>
+            <td class="table-cell text-sm text-gray-600">{{ order.createdAt | date:'mediumDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
