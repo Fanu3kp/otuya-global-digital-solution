@@ -54,6 +54,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "allowedHosts": true
+          },
           "configurations": {
             "production": {
               "browserTarget": "Ecommerce-Product-App:build:production"
