@@ -19,9 +19,7 @@
           <nav class="hidden md:flex gap-6">
             <a routerLink="/packages" routerLinkActive="text-white" class="font-bold text-white hover:text-pink-lighter transition-colors">Software Packages</a>
             <a routerLink="/packages/new" routerLinkActive="text-white" class="font-bold text-white hover:text-pink-lighter transition-colors" *ngIf="isAdmin">Add Package</a>
-            <a routerLink="/my-orders" routerLinkActive="text-white" class="font-bold text-white hover:text-pink-lighter transition-colors" *ngIf="auth.isAuthenticated">My Orders</a>
-            <a *ngIf="!auth.isAuthenticated" routerLink="/login" class="font-bold text-white hover:text-pink-lighter transition-colors">Login</a>
-            <button *ngIf="auth.isAuthenticated" (click)="auth.logout()" class="font-bold text-pink-lighter hover:text-white transition-colors px-3 py-1 rounded-full bg-white/20 border border-white/30">Logout</button>
+            <a routerLink="/my-orders" routerLinkActive="text-white" class="font-bold text-white hover:text-pink-lighter transition-colors">My Orders</a>
           </nav>
         </div>
       </div>
@@ -32,9 +30,7 @@
     <nav class="text-center space-y-4">
       <a routerLink="/packages" routerLinkActive="text-pink-lighter" class="text-white text-xl font-bold block py-3 hover:text-pink-lighter transition-colors">Software Packages</a>
       <a *ngIf="isAdmin" routerLink="/packages/new" class="text-white text-xl font-bold block py-3 hover:text-pink-lighter transition-colors">Add Package</a>
-      <a *ngIf="auth.isAuthenticated" routerLink="/my-orders" class="text-white text-xl font-bold block py-3 hover:text-pink-lighter transition-colors">My Orders</a>
-      <a *ngIf="!auth.isAuthenticated" routerLink="/login" class="text-white text-xl font-bold block py-3 hover:text-pink-lighter transition-colors">Login</a>
-      <button *ngIf="auth.isAuthenticated" (click)="auth.logout(); toggleMobileMenu()" class="text-pink-lighter text-xl font-bold block py-3 hover:text-white transition-colors">Logout</button>
+      <a routerLink="/my-orders" class="text-white text-xl font-bold block py-3 hover:text-pink-lighter transition-colors">My Orders</a>
     </nav>
     <button (click)="toggleMobileMenu()" class="absolute top-6 right-6 text-white p-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 import { SoftwarePackageService } from '../../services/software-package.service';
 
 @Component({
@@ -16,8 +15,7 @@ export class AddSoftwarePackageComponent implements OnInit {
     stock: '',
     category: '',
     brand: '',
-    discountPercentage: '',
-    thumbnail: ''
+    discountPercentage: ''
   };
   selectedFile: File | null = null;
   imagePreview: string | null = null;
@@ -26,67 +24,47 @@ export class AddSoftwarePackageComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
 
-  constructor(private router: Router, private softwarePackageService: SoftwarePackageService, public auth: AuthService) {}
+  constructor(
+    private router: Router,
+    private softwarePackageService: SoftwarePackageService
+  ) {}
 
-  ngOnInit(): void {
-    this.auth.restoreSession();
-    if (!this.auth.isAdmin) {
-      this.router.navigate(['/packages']);
-    }
-  }
+  ngOnInit(): void {}
 
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedFile = input.files[0];
       const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result as string;
+      reader.onload = e => {
+        this.imagePreview = e.target?.result as string;
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(this.selectedFile);
     }
   }
 
   removeImage(): void {
     this.selectedFile = null;
     this.imagePreview = null;
-    this.formData.thumbnail = '';
-  }
-
-  async uploadImage(): Promise<string | null> {
-    if (!this.selectedFile) return null;
-
-    this.isUploading = true;
-    try {
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-
-      const res: any = await this.softwarePackageService.uploadImage(formData);
-      return res?.fileDownloadUri || null;
-    } catch (err) {
-      console.error('Image upload error:', err);
-      this.errorMessage = 'Failed to upload image. Please try again.';
-      return null;
-    } finally {
-      this.isUploading = false;
-    }
   }
 
   async handleSubmit(): Promise<void> {
+    if (!this.formData.title || !this.formData.description || !this.formData.price || !this.formData.stock) {
+      this.errorMessage = 'Please fill in all required fields';
+      this.successMessage = '';
+      return;
+    }
+
     this.isSubmitting = true;
-    this.successMessage = '';
     this.errorMessage = '';
+    this.successMessage = '';
 
     try {
-      let thumbnailUrl: string = this.formData.thumbnail;
-
+      let imageUrl = '';
       if (this.selectedFile) {
-        const uploaded = await this.uploadImage();
-        if (!uploaded) {
-          this.isSubmitting = false;
-          return;
-        }
-        thumbnailUrl = uploaded;
+        this.isUploading = true;
+        imageUrl = await this.softwarePackageService.uploadImage(this.selectedFile) || '';
+        this.isUploading = false;
       }
 
       const payload = {
@@ -97,15 +75,13 @@ export class AddSoftwarePackageComponent implements OnInit {
         category: this.formData.category,
         brand: this.formData.brand,
         discountPercentage: parseFloat(this.formData.discountPercentage) || 0,
-        thumbnail: thumbnailUrl || '',
-        images: thumbnailUrl ? [thumbnailUrl] : []
+        thumbnail: imageUrl,
+        images: imageUrl ? [imageUrl] : []
       };
 
       const result = await this.softwarePackageService.addPackage(payload);
-
       if (result) {
-        this.successMessage = `Software package "${result.title}" added successfully!`;
-
+        this.successMessage = Software package "" added successfully!;
         this.formData = {
           title: '',
           description: '',
@@ -113,12 +89,10 @@ export class AddSoftwarePackageComponent implements OnInit {
           stock: '',
           category: '',
           brand: '',
-          discountPercentage: '',
-          thumbnail: ''
+          discountPercentage: ''
         };
         this.selectedFile = null;
         this.imagePreview = null;
-
         setTimeout(() => {
           this.router.navigate(['/packages']);
         }, 2000);
@@ -130,6 +104,7 @@ export class AddSoftwarePackageComponent implements OnInit {
       this.errorMessage = 'An error occurred. Please try again.';
     } finally {
       this.isSubmitting = false;
+      this.isUploading = false;
     }
   }
 

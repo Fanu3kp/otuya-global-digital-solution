@@ -11,8 +11,6 @@ import { AddSoftwarePackageComponent } from './pages/add-software-package/add-so
 import { ViewSoftwarePackageComponent } from './pages/view-software-package/view-software-package.component';
 import { OrderComponent } from './pages/order/order.component';
 import { MyOrdersComponent } from './pages/my-orders/my-orders.component';
-import { LoginComponent } from './pages/login/login.component';
-import { RegisterComponent } from './pages/register/register.component';
 
 @NgModule({
   declarations: [
@@ -22,9 +20,7 @@ import { RegisterComponent } from './pages/register/register.component';
     AddSoftwarePackageComponent,
     ViewSoftwarePackageComponent,
     OrderComponent,
-    MyOrdersComponent,
-    LoginComponent,
-    RegisterComponent
+    MyOrdersComponent
   ],
   imports: [
     BrowserModule,

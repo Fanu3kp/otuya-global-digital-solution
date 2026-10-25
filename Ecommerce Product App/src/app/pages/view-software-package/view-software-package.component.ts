@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 import { SoftwarePackageService } from '../../services/software-package.service';
 import { SoftwarePackage } from '../../models/software-package';
 
@@ -19,17 +18,15 @@ export class ViewSoftwarePackageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private softwarePackageService: SoftwarePackageService,
-    public auth: AuthService
+    private softwarePackageService: SoftwarePackageService
   ) {}
 
   ngOnInit(): void {
-    this.auth.restoreSession();
     this.fetchPackage();
   }
 
   get isAdmin(): boolean {
-    return this.auth.isAdmin;
+    return true;
   }
 
   async fetchPackage(): Promise<void> {
